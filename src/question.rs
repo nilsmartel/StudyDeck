@@ -1,5 +1,8 @@
 /// Module containg datastructures of actual questions.
 
+use serde_derive::{Deserialize, Serialize};
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct QuestionScenario {
     /// Introductory text, because one QuestionScenario can accomodate multiple questions.
     /// May be empty, if the question description already suffices
@@ -9,6 +12,7 @@ pub struct QuestionScenario {
     tags: Vec<String>,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum Question {
     /// Offer multiple options to answer from, only some are correct.
     /// Can represent yes and no questions.
