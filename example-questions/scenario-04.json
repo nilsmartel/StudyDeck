@@ -1,0 +1,44 @@
+{
+  "scenario_description": "Consider a database transaction running under the default isolation level of a typical relational database.",
+  "questions": [
+    {
+      "MultipleChoice": {
+        "question_text": "Which properties are captured by the ACID acronym?",
+        "options": [
+          "Atomicity",
+          "Consistency",
+          "Availability",
+          "Isolation",
+          "Durability"
+        ],
+        "correct_answers": [
+          0,
+          1,
+          3,
+          4
+        ]
+      }
+    },
+    {
+      "OrderingTask": {
+        "question_text": "Order the phases of a two-phase commit as coordinated across participants.",
+        "options": [
+          "Coordinator sends commit",
+          "Coordinator sends prepare",
+          "Participants vote",
+          "Participants acknowledge commit"
+        ],
+        "correct_order": [
+          1,
+          2,
+          0,
+          3
+        ]
+      }
+    }
+  ],
+  "tags": [
+    "databases",
+    "transactions"
+  ]
+}

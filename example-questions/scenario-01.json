@@ -1,0 +1,25 @@
+{
+  "scenario_description": "A team is choosing memory-safety guarantees for a new systems project written in Rust.",
+  "questions": [
+    {
+      "MultipleChoice": {
+        "question_text": "Which of the following are enforced by Rust's ownership and borrowing rules at compile time?",
+        "options": [
+          "No data races between threads",
+          "No use-after-free of heap allocations",
+          "Guaranteed absence of logic bugs",
+          "No double frees"
+        ],
+        "correct_answers": [
+          0,
+          1,
+          3
+        ]
+      }
+    }
+  ],
+  "tags": [
+    "rust",
+    "memory-safety"
+  ]
+}

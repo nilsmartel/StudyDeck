@@ -1,0 +1,27 @@
+{
+  "scenario_description": "You are describing the lifecycle of an HTTP request as it travels through a typical web server.",
+  "questions": [
+    {
+      "OrderingTask": {
+        "question_text": "Put the following steps in the order they occur when handling an incoming request.",
+        "options": [
+          "Parse the request headers",
+          "Accept the TCP connection",
+          "Send the response body",
+          "Route to the matching handler",
+          "Reboot the server"
+        ],
+        "correct_order": [
+          1,
+          0,
+          3,
+          2
+        ]
+      }
+    }
+  ],
+  "tags": [
+    "networking",
+    "http"
+  ]
+}

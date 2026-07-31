@@ -1,0 +1,21 @@
+{
+  "scenario_description": "",
+  "questions": [
+    {
+      "MultipleChoice": {
+        "question_text": "In Rust, does moving a value out of a variable leave that variable usable afterwards?",
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "correct_answers": [
+          1
+        ]
+      }
+    }
+  ],
+  "tags": [
+    "rust",
+    "ownership"
+  ]
+}
