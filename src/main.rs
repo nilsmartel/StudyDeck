@@ -1,8 +1,9 @@
 mod question;
 
-fn main() {
-    println!("Hello, world!");
 use question::{Question, QuestionScenario};
+use std::fs;
+use std::path::Path;
+
 /// Hand-written example scenarios exported as JSON to feed another agent.
 fn example_scenarios() -> Vec<QuestionScenario> {
     vec![
@@ -94,5 +95,16 @@ fn example_scenarios() -> Vec<QuestionScenario> {
 }
 
 fn main() -> std::io::Result<()> {
+    let out_dir = Path::new("example-questions");
+    fs::create_dir_all(out_dir)?;
+
+    for (i, scenario) in example_scenarios().iter().enumerate() {
+        let json = serde_json::to_string_pretty(scenario)
+            .expect("QuestionScenario should always serialize");
+        let path = out_dir.join(format!("scenario-{:02}.json", i + 1));
+        fs::write(&path, json)?;
+        println!("wrote {}", path.display());
+    }
+
     Ok(())
 }
