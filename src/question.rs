@@ -6,10 +6,10 @@ use serde_derive::{Deserialize, Serialize};
 pub struct QuestionScenario {
     /// Introductory text, because one QuestionScenario can accomodate multiple questions.
     /// May be empty, if the question description already suffices
-    scenario_description: String,
-    questions: Vec<Question>,
+    pub scenario_description: String,
+    pub questions: Vec<Question>,
     /// optional tag to identify questions by examen topic
-    tags: Vec<String>,
+    pub tags: Vec<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
