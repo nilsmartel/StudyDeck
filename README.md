@@ -44,4 +44,5 @@ a list of `tags`, and one or more questions. Two question types are supported:
 ```
 
 See the [`example-questions/`](example-questions) folder for working examples of
-both question types.
+both question types. A larger set of real question data is available at
+[StudyDeckQuestions-Ai200-Examen](https://github.com/nilsmartel/StudyDeckQuestions-Ai200-Examen).
