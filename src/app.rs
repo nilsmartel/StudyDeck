@@ -6,7 +6,7 @@ use std::fmt;
 
 use iced::keyboard;
 use iced::widget::{
-    button, checkbox, column, container, pick_list, row, scrollable, text, Column, Row, Space,
+    Column, Row, Space, button, checkbox, column, container, pick_list, row, scrollable, text,
 };
 use iced::{Alignment, Element, Length, Subscription};
 
@@ -253,10 +253,14 @@ impl App {
 
         // Progress indicator.
         items.push(
-            text(format!("Question {} of {}", self.current_question_index + 1, self.order.len()))
-                .size(14)
-                .style(text::secondary)
-                .into(),
+            text(format!(
+                "Question {} of {}",
+                self.current_question_index + 1,
+                self.order.len()
+            ))
+            .size(14)
+            .style(text::secondary)
+            .into(),
         );
 
         // Scenario context.
@@ -327,13 +331,10 @@ impl App {
                     })
                     .placeholder("choose…");
                     items.push(
-                        row![
-                            text(format!("{}.", slot + 1)).size(18).width(28),
-                            picker
-                        ]
-                        .spacing(10)
-                        .align_y(Alignment::Center)
-                        .into(),
+                        row![text(format!("{}.", slot + 1)).size(18).width(28), picker]
+                            .spacing(10)
+                            .align_y(Alignment::Center)
+                            .into(),
                     );
                 }
             }
@@ -433,9 +434,13 @@ fn correct_answer_text(question: &Question) -> Option<String> {
                 .iter()
                 .filter_map(|&i| options.get(i).map(String::as_str))
                 .collect();
-            Some(format!("Correct answer:{}",
-                labels.iter().map(|answer| format!("\n  · {answer}")).collect::<String>()
-                ))
+            Some(format!(
+                "Correct answer:{}",
+                labels
+                    .iter()
+                    .map(|answer| format!("\n  · {answer}"))
+                    .collect::<String>()
+            ))
         }
         Question::OrderingTask {
             options,

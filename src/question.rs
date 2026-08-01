@@ -1,5 +1,4 @@
 /// Module containg datastructures of actual questions.
-
 use serde_derive::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

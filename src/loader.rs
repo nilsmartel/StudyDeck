@@ -31,7 +31,10 @@ pub fn read_scenarios(dir: &Path) -> Vec<QuestionScenario> {
                     paths.push(path);
                 }
             }
-            Err(err) => eprintln!("could not read a directory entry in {}: {err}", dir.display()),
+            Err(err) => eprintln!(
+                "could not read a directory entry in {}: {err}",
+                dir.display()
+            ),
         }
     }
     paths.sort();
