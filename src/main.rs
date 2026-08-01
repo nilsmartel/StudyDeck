@@ -25,5 +25,6 @@ fn main() -> iced::Result {
 }
 
 fn theme(_state: &App) -> iced::Theme {
-    iced::Theme::TokyoNight
+    iced::Theme::CatppuccinLatte
+    // iced::Theme::TokyoNight
 }
