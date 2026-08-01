@@ -81,10 +81,12 @@ impl App {
             .map(|&(s, q)| fresh_answer(&scenarios[s].questions[q]))
             .unwrap_or(Answer::None);
 
+        let scenario_count = scenarios.len();
+
         Self {
             scenarios,
             order,
-            current_question_index: rand::random_range(0..scenarios.len()),
+            current_question_index: rand::random_range(0..scenario_count),
             answer,
             graded: None,
             history: Vec::new(),
