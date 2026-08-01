@@ -84,7 +84,7 @@ impl App {
         Self {
             scenarios,
             order,
-            current_question_index: 0,
+            current_question_index: rand::random_range(0..scenarios.len()),
             answer,
             graded: None,
             history: Vec::new(),
@@ -170,12 +170,12 @@ impl App {
                 if self.graded.is_none() {
                     return; // must grade before advancing
                 }
-                self.current_question_index += 1;
+                self.current_question_index = rand::random_range(0..self.scenarios.len());
                 self.graded = None;
                 self.answer = self.fresh_answer_for_current();
             }
             Message::Restart => {
-                self.current_question_index = 0;
+                self.current_question_index = rand::random_range(0..self.scenarios.len());
                 self.history.clear();
                 self.graded = None;
                 self.answer = self.fresh_answer_for_current();
