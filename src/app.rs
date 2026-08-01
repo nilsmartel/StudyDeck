@@ -61,7 +61,7 @@ pub struct App {
     order: Vec<(usize, usize)>,
     /// Index of the current question within `order`. Equal to `order.len()`
     /// once the session is complete.
-    current: usize,
+    current_question_index: usize,
     /// The user's working answer for the current question.
     answer: Answer,
     /// `Some(is_correct)` once the current question has been graded, else
@@ -84,7 +84,7 @@ impl App {
         Self {
             scenarios,
             order,
-            current: 0,
+            current_question_index: 0,
             answer,
             graded: None,
             history: Vec::new(),
@@ -93,7 +93,7 @@ impl App {
 
     /// The scenario + question currently on screen, if any.
     fn current_question(&self) -> Option<(&QuestionScenario, &Question)> {
-        let &(s, q) = self.order.get(self.current)?;
+        let &(s, q) = self.order.get(self.current_question_index)?;
         let scenario = &self.scenarios[s];
         Some((scenario, &scenario.questions[q]))
     }
@@ -170,12 +170,12 @@ impl App {
                 if self.graded.is_none() {
                     return; // must grade before advancing
                 }
-                self.current += 1;
+                self.current_question_index += 1;
                 self.graded = None;
                 self.answer = self.fresh_answer_for_current();
             }
             Message::Restart => {
-                self.current = 0;
+                self.current_question_index = 0;
                 self.history.clear();
                 self.graded = None;
                 self.answer = self.fresh_answer_for_current();
@@ -208,7 +208,7 @@ impl App {
     pub fn view(&self) -> Element<'_, Message> {
         let body = if self.order.is_empty() {
             self.view_empty()
-        } else if self.current >= self.order.len() {
+        } else if self.current_question_index >= self.order.len() {
             self.view_summary()
         } else {
             self.view_question()
@@ -253,7 +253,7 @@ impl App {
 
         // Progress indicator.
         items.push(
-            text(format!("Question {} of {}", self.current + 1, self.order.len()))
+            text(format!("Question {} of {}", self.current_question_index + 1, self.order.len()))
                 .size(14)
                 .style(text::secondary)
                 .into(),
@@ -352,7 +352,7 @@ impl App {
                 } else {
                     text("✗ Incorrect").size(18).style(text::danger)
                 };
-                let last = self.current + 1 >= self.order.len();
+                let last = self.current_question_index + 1 >= self.order.len();
                 let next_label = if last { "See results" } else { "Next question" };
                 items.push(
                     row![
