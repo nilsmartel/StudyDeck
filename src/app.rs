@@ -38,6 +38,19 @@ enum Answer {
     None,
 }
 
+impl Answer {
+    /// returns true if the user has filled all needed details
+    pub fn is_filled(&self) -> bool {
+        match self {
+            // If at least one slot has been selected
+            Answer::MultipleChoice { selected } => selected.contains(&true),
+            // of all slots have been assigned
+            Answer::Ordering { slots } => slots.contains(&None) == false,
+            Answer::None => false,
+        }
+    }
+}
+
 #[derive(Debug, Clone)]
 pub enum Message {
     /// A multiple-choice option checkbox was toggled.
@@ -188,8 +201,11 @@ impl App {
                 if self.current_question().is_none() {
                     return; // no active question (summary or empty screen)
                 }
+                // if we have clicked answers, but not yet clicked "submit"
                 if self.graded.is_none() {
-                    self.update(Message::Submit);
+                    if self.answer.is_filled() {
+                        self.update(Message::Submit);
+                    }
                 } else {
                     self.update(Message::Next);
                 }
