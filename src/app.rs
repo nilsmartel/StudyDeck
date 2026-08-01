@@ -9,6 +9,7 @@ use iced::widget::{
     Column, Row, Space, button, checkbox, column, container, pick_list, row, scrollable, text,
 };
 use iced::{Alignment, Element, Length, Subscription};
+use rand::seq::SliceRandom;
 
 use crate::question::{Question, QuestionScenario};
 
@@ -74,19 +75,20 @@ pub struct App {
 }
 
 impl App {
-    pub fn new(scenarios: Vec<QuestionScenario>) -> Self {
+    pub fn new(mut scenarios: Vec<QuestionScenario>) -> Self {
+        // Present scenarios in a random order each session.
+        scenarios.shuffle(&mut rand::rng());
+
         let order = flatten(&scenarios);
         let answer = order
             .first()
             .map(|&(s, q)| fresh_answer(&scenarios[s].questions[q]))
             .unwrap_or(Answer::None);
 
-        let scenario_count = scenarios.len();
-
         Self {
             scenarios,
             order,
-            current_question_index: rand::random_range(0..scenario_count),
+            current_question_index: 0,
             answer,
             graded: None,
             history: Vec::new(),
@@ -172,12 +174,12 @@ impl App {
                 if self.graded.is_none() {
                     return; // must grade before advancing
                 }
-                self.current_question_index = rand::random_range(0..self.scenarios.len());
+                self.current_question_index += 1;
                 self.graded = None;
                 self.answer = self.fresh_answer_for_current();
             }
             Message::Restart => {
-                self.current_question_index = rand::random_range(0..self.scenarios.len());
+                self.current_question_index = 0;
                 self.history.clear();
                 self.graded = None;
                 self.answer = self.fresh_answer_for_current();
@@ -453,13 +455,13 @@ fn correct_answer_text(question: &Question) -> Option<String> {
                 .iter()
                 .filter_map(|&i| options.get(i).map(String::as_str))
                 .collect();
-                Some(format!(
-                    "Correct order:{}",
-                    labels
-                        .iter()
-                        .map(|answer| format!("\n  · {answer}"))
-                        .collect::<String>()
-                ))
+            Some(format!(
+                "Correct order:{}",
+                labels
+                    .iter()
+                    .map(|answer| format!("\n  · {answer}"))
+                    .collect::<String>()
+            ))
         }
     }
 }
