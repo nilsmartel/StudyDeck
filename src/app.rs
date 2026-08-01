@@ -408,7 +408,9 @@ fn correct_answer_text(question: &Question) -> Option<String> {
                 .iter()
                 .filter_map(|&i| options.get(i).map(String::as_str))
                 .collect();
-            Some(format!("Correct answer: {}", labels.join(", ")))
+            Some(format!("Correct answer:{}",
+                labels.iter().map(|answer| format!("\n  · {answer}")).collect::<String>()
+                ))
         }
         Question::OrderingTask {
             options,
