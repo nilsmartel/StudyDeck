@@ -1,5 +1,5 @@
 [package]
-name = "RustAnsweringMachine"
+name = "studydeck"
 version = "0.1.0"
 edition = "2024"
 

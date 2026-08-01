@@ -20,7 +20,7 @@ fn main() -> iced::Result {
         App::view,
     )
     .subscription(App::subscription)
-    .title("Rust Answering Machine")
+    .title("StudyDeck")
     .theme(theme)
     .run()
 }
