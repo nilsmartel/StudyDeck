@@ -453,13 +453,13 @@ fn correct_answer_text(question: &Question) -> Option<String> {
                 .iter()
                 .filter_map(|&i| options.get(i).map(String::as_str))
                 .collect();
-            Some(format!(
-                "Correct order:{}",
-                labels
-                    .iter()
-                    .map(|answer| format!("\n  · {answer}"))
-                    .collect::<String>()
-            ))
+                Some(format!(
+                    "Correct order:{}",
+                    labels
+                        .iter()
+                        .map(|answer| format!("\n  · {answer}"))
+                        .collect::<String>()
+                ))
         }
     }
 }
