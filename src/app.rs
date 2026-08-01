@@ -4,10 +4,11 @@
 use std::collections::BTreeSet;
 use std::fmt;
 
+use iced::keyboard;
 use iced::widget::{
     button, checkbox, column, container, pick_list, row, scrollable, text, Column, Row, Space,
 };
-use iced::{Alignment, Element, Length};
+use iced::{Alignment, Element, Length, Subscription};
 
 use crate::question::{Question, QuestionScenario};
 
@@ -48,6 +49,8 @@ pub enum Message {
     Next,
     /// Start the whole session over.
     Restart,
+    /// The Enter key was pressed — submit or advance depending on state.
+    Enter,
 }
 
 pub struct App {
@@ -177,7 +180,29 @@ impl App {
                 self.graded = None;
                 self.answer = self.fresh_answer_for_current();
             }
+            Message::Enter => {
+                if self.current_question().is_none() {
+                    return; // no active question (summary or empty screen)
+                }
+                if self.graded.is_none() {
+                    self.update(Message::Submit);
+                } else {
+                    self.update(Message::Next);
+                }
+            }
         }
+    }
+
+    /// Global keyboard handling: Enter submits the current answer, or advances
+    /// to the next question once it has been graded.
+    pub fn subscription(&self) -> Subscription<Message> {
+        keyboard::listen().filter_map(|event| match event {
+            keyboard::Event::KeyPressed {
+                key: keyboard::Key::Named(keyboard::key::Named::Enter),
+                ..
+            } => Some(Message::Enter),
+            _ => None,
+        })
     }
 
     pub fn view(&self) -> Element<'_, Message> {

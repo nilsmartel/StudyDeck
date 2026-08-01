@@ -19,6 +19,7 @@ fn main() -> iced::Result {
         App::update,
         App::view,
     )
+    .subscription(App::subscription)
     .title("Rust Answering Machine")
     .theme(theme)
     .run()
