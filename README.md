@@ -6,9 +6,8 @@ A tiny desktop app for studying by self-quizzing — built to help you prep for 
 
 ## What it is
 
-StudyDeck loads a folder of question scenarios and quizzes you on them one at a
-time, in a random no-repeat order, while tracking how many you got right and
-wrong. It's a native desktop app written in Rust with [`iced`](https://iced.rs).
+StudyDeck loads a folder of question scenarios and quizzes you on them.
+It's a native desktop app written in Rust with [`iced`](https://iced.rs).
 
 ## Run
 
