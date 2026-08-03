@@ -21,11 +21,6 @@ fn main() -> iced::Result {
     )
     .subscription(App::subscription)
     .title("StudyDeck")
-    .theme(theme)
+    .theme(App::theme)
     .run()
-}
-
-fn theme(_state: &App) -> iced::Theme {
-    iced::Theme::CatppuccinLatte
-    // iced::Theme::TokyoNight
 }

@@ -65,6 +65,8 @@ pub enum Message {
     Restart,
     /// The Enter key was pressed — submit or advance depending on state.
     Enter,
+    /// A different UI theme was picked from the theme selector.
+    ThemeSelected(iced::Theme),
 }
 
 pub struct App {
@@ -85,6 +87,8 @@ pub struct App {
     /// `true` = a point earned, `false` = a point missed. This is the
     /// failed-vs-correct tracker "over time".
     history: Vec<bool>,
+    /// The currently selected UI theme, chosen via the theme picker.
+    theme: iced::Theme,
 }
 
 impl App {
@@ -105,7 +109,13 @@ impl App {
             answer,
             graded: None,
             history: Vec::new(),
+            theme: iced::Theme::CatppuccinLatte,
         }
+    }
+
+    /// The theme currently driving the application's look.
+    pub fn theme(&self) -> iced::Theme {
+        self.theme.clone()
     }
 
     /// The scenario + question currently on screen, if any.
@@ -210,6 +220,9 @@ impl App {
                     self.update(Message::Next);
                 }
             }
+            Message::ThemeSelected(theme) => {
+                self.theme = theme;
+            }
         }
     }
 
@@ -263,7 +276,20 @@ impl App {
             marks = marks.push(mark);
         }
 
-        column![score, marks].spacing(8).into()
+        let theme_picker = pick_list(
+            iced::Theme::ALL,
+            Some(self.theme.clone()),
+            Message::ThemeSelected,
+        )
+        .text_size(14);
+
+        row![
+            column![score, marks].spacing(8),
+            Space::new().width(Length::Fill),
+            theme_picker,
+        ]
+        .align_y(Alignment::Start)
+        .into()
     }
 
     fn view_question(&self) -> Element<'_, Message> {
