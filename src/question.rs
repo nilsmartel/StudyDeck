@@ -22,6 +22,9 @@ pub enum Question {
         options: Vec<String>,
         /// Indexes of correct answers. For some question more than one option may be correct.
         correct_answers: Vec<usize>,
+        /// Optional explanation, shown after the user submits their answer.
+        #[serde(default)]
+        explanation: Option<String>,
     },
     /// A Question where you are presented ith multiple blocks / options that need to be sorted into the
     /// correct order. It may be, that more options exist than slots they can be sorted into.
@@ -34,5 +37,8 @@ pub enum Question {
         /// The correct order of items. The number of available slots to sort the options into is
         /// derived by the length of this array.
         correct_order: Vec<usize>,
+        /// Optional explanation, shown after the user submits their answer.
+        #[serde(default)]
+        explanation: Option<String>,
     },
 }

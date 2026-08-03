@@ -352,6 +352,7 @@ impl App {
                     question_text,
                     options,
                     correct_order,
+                    ..
                 },
                 Answer::Ordering { slots },
             ) => {
@@ -415,6 +416,17 @@ impl App {
                         items.push(text(reveal).size(14).style(text::secondary).into());
                     }
                 }
+                // Show the explanation, if any, regardless of whether the
+                // answer was right or wrong.
+                if let Some(explanation) = question_explanation(question) {
+                    items.push(
+                        container(text(explanation).size(14))
+                            .padding(12)
+                            .width(Length::Fill)
+                            .style(container::rounded_box)
+                            .into(),
+                    );
+                }
             }
         }
 
@@ -464,6 +476,15 @@ fn fresh_answer(question: &Question) -> Answer {
         Question::OrderingTask { correct_order, .. } => Answer::Ordering {
             slots: vec![None; correct_order.len()],
         },
+    }
+}
+
+/// The optional explanation attached to a question, shown after grading
+/// whether the answer was right or wrong.
+fn question_explanation(question: &Question) -> Option<&str> {
+    match question {
+        Question::MultipleChoice { explanation, .. }
+        | Question::OrderingTask { explanation, .. } => explanation.as_deref(),
     }
 }
 

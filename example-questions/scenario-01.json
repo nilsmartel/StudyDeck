@@ -14,7 +14,8 @@
           0,
           1,
           3
-        ]
+        ],
+        "explanation": "Ownership and borrowing prevent data races, use-after-free, and double frees at compile time, but they cannot catch logic bugs — those depend on program intent, not memory safety."
       }
     }
   ],
