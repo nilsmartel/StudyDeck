@@ -92,6 +92,15 @@ pub struct App {
     history: Vec<bool>,
     /// The currently selected UI theme, chosen via the theme picker.
     theme: iced::Theme,
+
+    /// Cached fields below:
+    /// Parsed Markdown for the current question's scenario description,
+    /// prompt, and explanation. Cached so the borrowed items rendered by
+    /// [`markdown::view`] outlive a single `view` call; rebuilt whenever the
+    /// current question changes via [`App::refresh_markdown`].
+    scenario_md: Vec<markdown::Item>,
+    question_md: Vec<markdown::Item>,
+    explanation_md: Vec<markdown::Item>,
 }
 
 impl App {
@@ -105,7 +114,7 @@ impl App {
             .map(|&(s, q)| fresh_answer(&scenarios[s].questions[q]))
             .unwrap_or(Answer::None);
 
-        Self {
+        let mut app = Self {
             scenarios,
             order,
             current_question_index: 0,
@@ -113,7 +122,31 @@ impl App {
             graded: None,
             history: Vec::new(),
             theme: iced::Theme::CatppuccinLatte,
-        }
+            scenario_md: Vec::new(),
+            question_md: Vec::new(),
+            explanation_md: Vec::new(),
+        };
+        app.refresh_markdown();
+        app
+    }
+
+    /// Re-parse the current question's scenario, prompt, and explanation into
+    /// Markdown items. Call whenever the current question changes so the
+    /// cached items stay in sync with what is on screen.
+    fn refresh_markdown(&mut self) {
+        let (scenario_md, question_md, explanation_md) = match self.current_question() {
+            Some((scenario, question)) => (
+                markdown::parse(&scenario.scenario_description).collect(),
+                markdown::parse(question_text(question)).collect(),
+                question_explanation(question)
+                    .map(|text| markdown::parse(text).collect())
+                    .unwrap_or_default(),
+            ),
+            None => (Vec::new(), Vec::new(), Vec::new()),
+        };
+        self.scenario_md = scenario_md;
+        self.question_md = question_md;
+        self.explanation_md = explanation_md;
     }
 
     /// The theme currently driving the application's look.
@@ -203,12 +236,14 @@ impl App {
                 self.current_question_index += 1;
                 self.graded = None;
                 self.answer = self.fresh_answer_for_current();
+                self.refresh_markdown();
             }
             Message::Restart => {
                 self.current_question_index = 0;
                 self.history.clear();
                 self.graded = None;
                 self.answer = self.fresh_answer_for_current();
+                self.refresh_markdown();
             }
             Message::Enter => {
                 if self.current_question().is_none() {
@@ -225,6 +260,12 @@ impl App {
             }
             Message::ThemeSelected(theme) => {
                 self.theme = theme;
+            }
+            Message::LinkClicked(url) => {
+                // Best-effort: hand the link to the OS. If nothing can open
+                // it, we simply ignore the failure — a dead link should not
+                // interrupt the quiz.
+                let _ = open_in_browser(&url);
             }
         }
     }
@@ -312,10 +353,10 @@ impl App {
             .into(),
         );
 
-        // Scenario context.
-        if !scenario.scenario_description.is_empty() {
+        // Scenario context, rendered from Markdown.
+        if !self.scenario_md.is_empty() {
             items.push(
-                container(text(scenario.scenario_description.as_str()).size(16))
+                container(markdown::view(&self.scenario_md, &self.theme).map(Message::LinkClicked))
                     .padding(12)
                     .width(Length::Fill)
                     .style(container::rounded_box)
@@ -333,15 +374,15 @@ impl App {
 
         // The question itself and its input widgets.
         match (question, &self.answer) {
-            (
-                Question::MultipleChoice {
-                    question_text,
-                    options,
-                    ..
-                },
-                Answer::MultipleChoice { selected },
-            ) => {
-                items.push(text(question_text.as_str()).size(22).into());
+            (Question::MultipleChoice { options, .. }, Answer::MultipleChoice { selected }) => {
+                items.push(
+                    markdown::view(
+                        &self.question_md,
+                        markdown::Settings::with_text_size(20, &self.theme),
+                    )
+                    .map(Message::LinkClicked)
+                    .into(),
+                );
                 for (i, option) in options.iter().enumerate() {
                     let mut cb = checkbox(selected[i]).label(option.as_str());
                     if !locked {
@@ -352,14 +393,20 @@ impl App {
             }
             (
                 Question::OrderingTask {
-                    question_text,
                     options,
                     correct_order,
                     ..
                 },
                 Answer::Ordering { slots },
             ) => {
-                items.push(text(question_text.as_str()).size(22).into());
+                items.push(
+                    markdown::view(
+                        &self.question_md,
+                        markdown::Settings::with_text_size(20, &self.theme),
+                    )
+                    .map(Message::LinkClicked)
+                    .into(),
+                );
                 items.push(
                     text("Assign an option to each position:")
                         .size(14)
@@ -420,14 +467,20 @@ impl App {
                     }
                 }
                 // Show the explanation, if any, regardless of whether the
-                // answer was right or wrong.
-                if let Some(explanation) = question_explanation(question) {
+                // answer was right or wrong. Rendered from Markdown.
+                if !self.explanation_md.is_empty() {
                     items.push(
-                        container(text(explanation).size(14))
-                            .padding(12)
-                            .width(Length::Fill)
-                            .style(container::rounded_box)
-                            .into(),
+                        container(
+                            markdown::view(
+                                &self.explanation_md,
+                                markdown::Settings::with_text_size(14, &self.theme),
+                            )
+                            .map(Message::LinkClicked),
+                        )
+                        .padding(12)
+                        .width(Length::Fill)
+                        .style(container::rounded_box)
+                        .into(),
                     );
                 }
             }
@@ -482,6 +535,14 @@ fn fresh_answer(question: &Question) -> Answer {
     }
 }
 
+/// The prompt text of a question, shared by both variants.
+fn question_text(question: &Question) -> &str {
+    match question {
+        Question::MultipleChoice { question_text, .. }
+        | Question::OrderingTask { question_text, .. } => question_text,
+    }
+}
+
 /// The optional explanation attached to a question, shown after grading
 /// whether the answer was right or wrong.
 fn question_explanation(question: &Question) -> Option<&str> {
@@ -530,4 +591,19 @@ fn correct_answer_text(question: &Question) -> Option<String> {
             ))
         }
     }
+}
+
+/// Hand a URL to the operating system's default handler. Used when the user
+/// clicks a link inside rendered Markdown. Returns an error the caller may
+/// ignore if no handler is available.
+fn open_in_browser(url: &str) -> std::io::Result<()> {
+    let program = if cfg!(target_os = "macos") {
+        "open"
+    } else if cfg!(target_os = "windows") {
+        "explorer"
+    } else {
+        "xdg-open"
+    };
+    std::process::Command::new(program).arg(url).spawn()?;
+    Ok(())
 }
