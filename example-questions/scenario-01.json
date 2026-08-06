@@ -1,9 +1,9 @@
 {
-  "scenario_description": "A team is choosing memory-safety guarantees for a new systems project written in Rust.",
+  "scenario_description": "A team is choosing **memory-safety guarantees** for a new systems project written in [Rust](https://www.rust-lang.org/).\n\nThey want to understand what the compiler can and *cannot* guarantee before committing to the language.",
   "questions": [
     {
       "MultipleChoice": {
-        "question_text": "Which of the following are enforced by Rust's ownership and borrowing rules at compile time?",
+        "question_text": "Which of the following are enforced by Rust's **ownership and borrowing** rules *at compile time*?",
         "options": [
           "No data races between threads",
           "No use-after-free of heap allocations",
@@ -15,7 +15,25 @@
           1,
           3
         ],
-        "explanation": "Ownership and borrowing prevent data races, use-after-free, and double frees at compile time, but they cannot catch logic bugs — those depend on program intent, not memory safety."
+        "explanation": "Ownership and borrowing prevent **data races**, **use-after-free**, and **double frees** at compile time.\n\nThey *cannot* catch logic bugs — those depend on program intent, not memory safety. See the [ownership chapter](https://doc.rust-lang.org/book/ch04-00-understanding-ownership.html) for details."
+      }
+    },
+    {
+      "OrderingTask": {
+        "question_text": "Order the steps of a value's **lifecycle** in Rust, from *first* to *last*.",
+        "options": [
+          "The value is **created** and its owner is bound",
+          "The value is **moved** or borrowed",
+          "The owner goes out of scope",
+          "`Drop` is run and memory is **freed**"
+        ],
+        "correct_order": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "explanation": "A value is first *created*, then may be *moved* or *borrowed* during its life.\n\nWhen its owner goes **out of scope**, Rust automatically calls `Drop` and frees the memory — no manual `free()` required."
       }
     }
   ],

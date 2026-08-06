@@ -6,7 +6,8 @@ use std::fmt;
 
 use iced::keyboard;
 use iced::widget::{
-    Column, Row, Space, button, checkbox, column, container, pick_list, row, scrollable, text,
+    Column, Row, Space, button, checkbox, column, container, markdown, pick_list, row, scrollable,
+    text,
 };
 use iced::{Alignment, Element, Length, Subscription};
 use rand::seq::SliceRandom;
@@ -67,6 +68,8 @@ pub enum Message {
     Enter,
     /// A different UI theme was picked from the theme selector.
     ThemeSelected(iced::Theme),
+    /// A link in some rendered Markdown was clicked; carries its target URL.
+    LinkClicked(markdown::Uri),
 }
 
 pub struct App {
